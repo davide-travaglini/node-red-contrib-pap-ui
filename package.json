@@ -12,15 +12,15 @@
         "ui"
     ],
     "license": "Apache-2.0",
-    "author": "Davide Vigano",
+    "author": "Davide Travaglini",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/davide-vigano/node-red-contrib-pap-ui.git"
+        "url": "git+https://github.com/davide-travaglini/node-red-contrib-pap-ui.git"
     },
     "bugs": {
-        "url": "https://github.com/davide-vigano/node-red-contrib-pap-ui/issues"
+        "url": "https://github.com/davide-travaglini/node-red-contrib-pap-ui/issues"
     },
-    "homepage": "https://github.com/davide-vigano/node-red-contrib-pap-ui#readme",
+    "homepage": "https://github.com/davide-travaglini/node-red-contrib-pap-ui#readme",
     "files": [
         "nodes/**",
         "resources/dist/**"
@@ -49,14 +49,14 @@
     "node-red": {
         "version": ">=3.1.0",
         "nodes": {
-            "ui-pap-server":   "nodes/ui-pap-server/ui-pap-server.js",
-            "ui-pap-area":     "nodes/ui-pap-area/ui-pap-area.js",
-            "ui-pap-page":     "nodes/ui-pap-page/ui-pap-page.js",
-            "ui-pap-group":    "nodes/ui-pap-group/ui-pap-group.js",
+            "ui-pap-server": "nodes/ui-pap-server/ui-pap-server.js",
+            "ui-pap-area": "nodes/ui-pap-area/ui-pap-area.js",
+            "ui-pap-page": "nodes/ui-pap-page/ui-pap-page.js",
+            "ui-pap-group": "nodes/ui-pap-group/ui-pap-group.js",
             "ui-pap-subgroup": "nodes/ui-pap-subgroup/ui-pap-subgroup.js",
-            "ui-pap-switch":   "nodes/widgets/ui-pap-switch/ui-pap-switch.js",
-            "ui-pap-sensor":   "nodes/widgets/ui-pap-sensor/ui-pap-sensor.js",
-            "ui-pap-gauge":    "nodes/widgets/ui-pap-gauge/ui-pap-gauge.js"
+            "ui-pap-switch": "nodes/widgets/ui-pap-switch/ui-pap-switch.js",
+            "ui-pap-sensor": "nodes/widgets/ui-pap-sensor/ui-pap-sensor.js",
+            "ui-pap-gauge": "nodes/widgets/ui-pap-gauge/ui-pap-gauge.js"
         }
     }
 }
