@@ -1,0 +1,104 @@
+<script type="text/javascript">
+    RED.nodes.registerType('ui-pap-sensor', {
+        category: 'PAP Dashboard',
+        color: '#3dd28d',
+        defaults: {
+            name:        { value: 'Sensor' },
+            subgroup:    { value: '', type: 'ui-pap-subgroup', required: true },
+            order:       { value: 0 },
+            unit:        { value: '' },
+            icon:        { value: 'sensor' },
+            accentColor: { value: 'green' },
+            readOnly: { value: true  },
+            outputs:  { value: 0     },
+            min:      { value: 0     },
+            max:      { value: 100   },
+            step:     { value: 1     },
+            decimals: { value: 0     },
+            driverLabel: { value: '' },
+            gridW:       { value: 2 },
+            gridH:       { value: 1 }
+        },
+        inputs:  1,
+        outputs: 'outputs',
+        icon: 'font-awesome/fa-thermometer-half',
+        label: function () { return this.name || 'Sensor' },
+        paletteLabel: 'sensor',
+        oneditprepare: function () {
+            function syncOutputs () {
+                const ro = $('#node-input-readOnly').prop('checked')
+                $('#node-input-outputs').val(ro ? 0 : 1)
+                $('#pap-sensor-numeric-controls').toggle(!ro)
+            }
+            $('#node-input-readOnly').on('change', syncOutputs)
+            syncOutputs()
+        }
+    })
+</script>
+
+<script type="text/html" data-template-name="ui-pap-sensor">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="e.g. Temperature">
+    </div>
+    <div class="form-row">
+        <label for="node-input-subgroup"><i class="fa fa-th-large"></i> Subgroup</label>
+        <input type="text" id="node-input-subgroup">
+    </div>
+    <div class="form-row">
+        <label for="node-input-order"><i class="fa fa-sort"></i> Order</label>
+        <input type="number" id="node-input-order" style="width:80px;" placeholder="0">
+    </div>
+    <div class="form-row">
+        <label for="node-input-unit"><i class="fa fa-subscript"></i> Unit</label>
+        <input type="text" id="node-input-unit" placeholder="e.g. °C, %, W">
+    </div>
+    <input type="hidden" id="node-input-outputs">
+    <div class="form-row">
+        <label for="node-input-readOnly"><i class="fa fa-lock"></i> Read only</label>
+        <input type="checkbox" id="node-input-readOnly" style="width:auto; margin-left:4px;">
+    </div>
+    <div id="pap-sensor-numeric-controls">
+        <div class="form-row">
+            <label for="node-input-min"><i class="fa fa-arrow-down"></i> Min</label>
+            <input type="number" id="node-input-min" style="width:80px;" placeholder="0">
+        </div>
+        <div class="form-row">
+            <label for="node-input-max"><i class="fa fa-arrow-up"></i> Max</label>
+            <input type="number" id="node-input-max" style="width:80px;" placeholder="100">
+        </div>
+        <div class="form-row">
+            <label for="node-input-step"><i class="fa fa-step-forward"></i> Step</label>
+            <input type="number" id="node-input-step" style="width:80px;" placeholder="1">
+        </div>
+    </div>
+    <div class="form-row">
+        <label for="node-input-decimals"><i class="fa fa-hashtag"></i> Decimals</label>
+        <input type="number" id="node-input-decimals" min="0" max="6" style="width:60px;" placeholder="0">
+    </div>
+    <div class="form-row">
+        <label for="node-input-driverLabel"><i class="fa fa-microchip"></i> Driver</label>
+        <input type="text" id="node-input-driverLabel" placeholder="e.g. ARDUINO DHT22">
+    </div>
+    <div class="form-row">
+        <label for="node-input-accentColor"><i class="fa fa-paint-brush"></i> Accent</label>
+        <select id="node-input-accentColor">
+            <option value="yellow">Yellow</option>
+            <option value="orange">Orange</option>
+            <option value="purple">Purple</option>
+            <option value="blue">Blue</option>
+            <option value="green">Green</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label><i class="fa fa-th"></i> Grid size</label>
+        <input type="number" id="node-input-gridW" min="1" max="12" style="width:50px;" placeholder="1">
+        <span style="margin: 0 6px;">×</span>
+        <input type="number" id="node-input-gridH" min="1" max="12" style="width:50px;" placeholder="1">
+        <span style="margin-left:8px; font-size:0.85em; color:#888;">colonne × righe</span>
+    </div>
+</script>
+
+<script type="text/html" data-help-name="ui-pap-sensor">
+    <p>Read-only sensor display. Input: number or <code>{ value, unit }</code>. No output.</p>
+</script>

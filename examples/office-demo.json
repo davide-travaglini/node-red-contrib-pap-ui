@@ -1,0 +1,189 @@
+[
+    {
+        "id": "tab-demo",
+        "type": "tab",
+        "label": "PAP UI — Office Demo",
+        "disabled": false,
+        "info": "Demo flow for node-red-contrib-pap-ui.\n\nConfig nodes (server / page / group) live in the config panel — they do NOT appear as boxes in the flow. Only the widget nodes (ui-pap-light etc.) appear here.\n\nUse the inject nodes to send test data, and watch the dashboard update in real time at the URL configured in the ui-pap-server node."
+    },
+
+    { "id": "server-1",  "type": "ui-pap-server", "name": "My Dashboard",  "path": "pap/ui" },
+    { "id": "page-1",    "type": "ui-pap-page",   "name": "Office",        "server": "server-1", "icon": "office",  "order": 1 },
+    { "id": "group-lights",   "type": "ui-pap-group", "name": "Lights",   "page": "page-1", "order": 1 },
+    { "id": "group-switches", "type": "ui-pap-group", "name": "Switches", "page": "page-1", "order": 2 },
+    { "id": "group-sensors",  "type": "ui-pap-group", "name": "Sensors",  "page": "page-1", "order": 3 },
+
+    {
+        "id": "light-ceiling",
+        "type": "ui-pap-light",
+        "z": "tab-demo",
+        "name": "Ceiling",
+        "group": "group-lights",
+        "order": 1,
+        "icon": "ceiling",
+        "accentColor": "yellow",
+        "driverLabel": "YEELIGHT V2",
+        "hasColor": true,
+        "hasDimming": true,
+        "wires": [["debug-light-out"]]
+    },
+    {
+        "id": "light-accent",
+        "type": "ui-pap-light",
+        "z": "tab-demo",
+        "name": "Accent",
+        "group": "group-lights",
+        "order": 2,
+        "icon": "accent",
+        "accentColor": "purple",
+        "driverLabel": "YEELIGHT V2",
+        "hasColor": true,
+        "hasDimming": true,
+        "wires": [["debug-light-out"]]
+    },
+    {
+        "id": "light-lamp",
+        "type": "ui-pap-light",
+        "z": "tab-demo",
+        "name": "Lamp",
+        "group": "group-lights",
+        "order": 3,
+        "icon": "lamp",
+        "accentColor": "orange",
+        "driverLabel": "PHILIPS E27",
+        "hasColor": false,
+        "hasDimming": true,
+        "wires": [["debug-light-out"]]
+    },
+
+    {
+        "id": "switch-speakers",
+        "type": "ui-pap-switch",
+        "z": "tab-demo",
+        "name": "Speakers",
+        "group": "group-switches",
+        "order": 1,
+        "driverLabel": "ARDUINO RELAY",
+        "wires": [["debug-switch-out"]]
+    },
+    {
+        "id": "switch-socket",
+        "type": "ui-pap-switch",
+        "z": "tab-demo",
+        "name": "Power Socket",
+        "group": "group-switches",
+        "order": 2,
+        "driverLabel": "ARDUINO RELAY",
+        "wires": [["debug-switch-out"]]
+    },
+
+    {
+        "id": "sensor-humidity",
+        "type": "ui-pap-sensor",
+        "z": "tab-demo",
+        "name": "Relative Humidity",
+        "group": "group-sensors",
+        "order": 1,
+        "unit": "%",
+        "icon": "humidity",
+        "driverLabel": "ARDUINO DHT22",
+        "wires": []
+    },
+    {
+        "id": "thermostat-1",
+        "type": "ui-pap-thermostat",
+        "z": "tab-demo",
+        "name": "Thermostat",
+        "group": "group-sensors",
+        "order": 2,
+        "unit": "°C",
+        "driverLabel": "ARDUINO DHT22",
+        "schedules": "[{\"from\":\"6:00\",\"to\":\"22:00\",\"temp\":22},{\"from\":\"22:00\",\"to\":\"6:00\",\"temp\":20}]",
+        "wires": []
+    },
+
+    {
+        "id": "inject-ceiling-on",
+        "type": "inject",
+        "z": "tab-demo",
+        "name": "Ceiling ON 80%",
+        "props": [{ "p": "payload" }],
+        "payload": "{\"on\":true,\"brightness\":80,\"color\":{\"h\":45,\"s\":90,\"l\":55}}",
+        "payloadType": "json",
+        "x": 160, "y": 80,
+        "wires": [["light-ceiling"]]
+    },
+    {
+        "id": "inject-ceiling-off",
+        "type": "inject",
+        "z": "tab-demo",
+        "name": "Ceiling OFF",
+        "props": [{ "p": "payload" }],
+        "payload": "{\"on\":false,\"brightness\":0}",
+        "payloadType": "json",
+        "x": 160, "y": 120,
+        "wires": [["light-ceiling"]]
+    },
+    {
+        "id": "inject-accent-on",
+        "type": "inject",
+        "z": "tab-demo",
+        "name": "Accent ON purple",
+        "props": [{ "p": "payload" }],
+        "payload": "{\"on\":true,\"brightness\":60,\"color\":{\"h\":280,\"s\":100,\"l\":55}}",
+        "payloadType": "json",
+        "x": 160, "y": 200,
+        "wires": [["light-accent"]]
+    },
+    {
+        "id": "inject-sensor",
+        "type": "inject",
+        "z": "tab-demo",
+        "name": "Humidity 33%",
+        "props": [{ "p": "payload" }],
+        "payload": "{\"value\":33}",
+        "payloadType": "json",
+        "repeat": "30",
+        "x": 160, "y": 320,
+        "wires": [["sensor-humidity"]]
+    },
+    {
+        "id": "inject-thermostat",
+        "type": "inject",
+        "z": "tab-demo",
+        "name": "Temp 21.2°C",
+        "props": [{ "p": "payload" }],
+        "payload": "{\"temp\":21.2,\"humidity\":33,\"mode\":\"heating\"}",
+        "payloadType": "json",
+        "repeat": "60",
+        "x": 160, "y": 380,
+        "wires": [["thermostat-1"]]
+    },
+
+    {
+        "id": "debug-light-out",
+        "type": "debug",
+        "z": "tab-demo",
+        "name": "Light action →",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "x": 520, "y": 120,
+        "wires": []
+    },
+    {
+        "id": "debug-switch-out",
+        "type": "debug",
+        "z": "tab-demo",
+        "name": "Switch action →",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "x": 520, "y": 280,
+        "wires": []
+    }
+]

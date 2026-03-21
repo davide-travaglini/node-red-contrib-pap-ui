@@ -1,0 +1,212 @@
+/* ================================================================
+   PAP Dashboard — Design System
+   ================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --nav-primary-w:   220px;
+    --nav-secondary-w: 180px;
+}
+
+/* ---- Design Tokens — Dark (default) ---- */
+:root,
+[data-theme="dark"] {
+    color-scheme: dark;
+
+    --theme-bg:            #1b1b1e;
+    --theme-surface:       #2b2b30;
+    --theme-surface-hover: #35353a;
+    --theme-surface-active:#4e4e54;
+
+    --theme-text-primary:  #ffffff;
+    --theme-text-secondary:#a0a0a5;
+    --theme-text-muted:    #707075;
+
+    --theme-accent-yellow: #f8c93a;
+    --theme-accent-orange: #ff7d44;
+    --theme-accent-purple: #c55dff;
+    --theme-accent-blue:   #34a4ff;
+    --theme-accent-green:  #3dd28d;
+
+    --theme-radius-sm:   8px;
+    --theme-radius-md:   12px;
+    --theme-radius-lg:   16px;
+
+    --theme-transition:  all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* --color-* aliases for component compatibility */
+    --color-bg:      var(--theme-bg);
+    --color-surface: var(--theme-surface);
+    --color-border:  var(--theme-surface-active);
+    --color-accent:  var(--theme-accent-green);
+    --color-text:    var(--theme-text-primary);
+    --color-muted:   var(--theme-text-muted);
+}
+
+[data-theme="light"] {
+    color-scheme: light;
+
+    --theme-bg:            #f4f5f7;
+    --theme-surface:       #ffffff;
+    --theme-surface-hover: #f0f2f5;
+    --theme-surface-active:#e4e6eb;
+
+    --theme-text-primary:  #1e1e24;
+    --theme-text-secondary:#686c73;
+    --theme-text-muted:    #9aa0a6;
+
+    --theme-accent-yellow: #f8c93a;
+    --theme-accent-orange: #ff7d44;
+    --theme-accent-purple: #c55dff;
+    --theme-accent-blue:   #34a4ff;
+    --theme-accent-green:  #3dd28d;
+
+    --theme-radius-sm:   8px;
+    --theme-radius-md:   12px;
+    --theme-radius-lg:   16px;
+
+    --theme-transition:  all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* --color-* aliases for component compatibility */
+    --color-bg:      var(--theme-bg);
+    --color-surface: var(--theme-surface);
+    --color-border:  var(--theme-surface-active);
+    --color-accent:  var(--theme-accent-green);
+    --color-text:    var(--theme-text-primary);
+    --color-muted:   var(--theme-text-muted);
+}
+
+/* ---- Reset & Base ---- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body, #app {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Inter', sans-serif;
+    background: var(--theme-bg);
+    color: var(--theme-text-primary);
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--theme-bg); }
+::-webkit-scrollbar-thumb { background: var(--theme-surface-active); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--theme-text-secondary); }
+
+/* ---- Fade-in animation ---- */
+@keyframes pap-fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Typography Utilities ---- */
+.pap-value-large {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--theme-text-primary);
+}
+
+.pap-label-sub {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--theme-text-secondary);
+}
+
+.pap-label-unit {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--theme-text-secondary);
+}
+
+/* ---- Accent tile backgrounds ---- */
+.pap-accent-yellow { background-color: var(--theme-accent-yellow) !important; color: #1b1b1e !important; }
+.pap-accent-orange { background-color: var(--theme-accent-orange) !important; color: #fff !important; }
+.pap-accent-purple { background-color: var(--theme-accent-purple) !important; color: #fff !important; }
+.pap-accent-blue   { background-color: var(--theme-accent-blue)   !important; color: #fff !important; }
+.pap-accent-green  { background-color: var(--theme-accent-green)  !important; color: #1b1b1e !important; }
+
+/* ---- Dashboard layout ---- */
+.pap-layout {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ---- Card / Surface ---- */
+.pap-card {
+    background: var(--theme-surface);
+    border-radius: var(--theme-radius-md);
+    transition: var(--theme-transition);
+}
+
+.pap-card:hover {
+    background: var(--theme-surface-hover);
+}
+
+/* ---- Buttons ---- */
+.pap-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: var(--theme-radius-md);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: var(--theme-transition);
+    background: var(--theme-surface);
+    color: var(--theme-text-primary);
+}
+
+.pap-btn:hover { background: var(--theme-surface-hover); }
+.pap-btn:active { background: var(--theme-surface-active); }
+
+.pap-btn-primary {
+    background: var(--theme-accent-blue);
+    color: #fff;
+}
+.pap-btn-primary:hover { filter: brightness(1.1); }
+
+/* ---- Section header ---- */
+.pap-section-header {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--theme-text-muted);
+    padding: 16px 0 8px;
+}
+
+/* ---- Connection indicator ---- */
+.pap-connection {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.7rem;
+    color: var(--theme-text-muted);
+    padding: 8px 0;
+}
+
+.pap-connection-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--theme-text-muted);
+    transition: var(--theme-transition);
+}
+
+.pap-connection-dot.connected    { background: var(--theme-accent-green); }
+.pap-connection-dot.disconnected { background: var(--theme-accent-orange); }

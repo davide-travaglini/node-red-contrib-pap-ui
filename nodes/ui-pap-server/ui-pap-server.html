@@ -1,0 +1,110 @@
+<script type="text/javascript">
+    RED.nodes.registerType('ui-pap-server', {
+        category: 'config',
+        color: '#2b2b30',
+        defaults: {
+            name:        { value: 'PAP Dashboard' },
+            path:        { value: 'pap/ui' },
+            theme:       { value: 'dark' },
+            title:       { value: 'PAP UI' },
+            accentColor: { value: '#3dd28d' }
+        },
+        label: function () {
+            return this.name || 'PAP Dashboard'
+        },
+        icon: 'font-awesome/fa-th-large',
+        oneditprepare: function () {
+            // URL preview
+            const update = () => {
+                const p = $('#node-config-input-path').val().replace(/^\/|\/$/g, '') || 'pap/ui'
+                $('#pap-url-preview').text(window.location.origin + '/' + p + '/')
+            }
+            $('#node-config-input-path').on('input', update)
+            update()
+
+            // Accent color swatches
+            const PRESETS = ['#3dd28d','#34a4ff','#c55dff','#ff7d44','#f8c93a']
+            const $picker = $('#node-config-input-accentColor')
+            const current = this.accentColor || '#3dd28d'
+            $picker.val(current)
+
+            function refreshSwatches () {
+                const val = $picker.val().toLowerCase()
+                $('.pap-swatch').css({ 'outline': 'none', 'outline-offset': '' })
+                const match = PRESETS.find(c => c === val)
+                if (match) {
+                    $(`.pap-swatch[data-color="${match}"]`)
+                        .css({ outline: '2px solid #fff', 'outline-offset': '2px' })
+                }
+            }
+
+            PRESETS.forEach(color => {
+                const $btn = $(`<button type="button" class="pap-swatch" data-color="${color}"></button>`)
+                    .css({ background: color, width: 26, height: 26, border: 'none',
+                           borderRadius: 6, cursor: 'pointer', flexShrink: 0 })
+                    .on('click', function () {
+                        $picker.val(color)
+                        refreshSwatches()
+                    })
+                $('#pap-accent-swatches').append($btn)
+            })
+
+            $picker.on('input', refreshSwatches)
+            refreshSwatches()
+        }
+    })
+</script>
+
+<script type="text/html" data-template-name="ui-pap-server">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="PAP Dashboard">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-path"><i class="fa fa-globe"></i> URL path</label>
+        <input type="text" id="node-config-input-path" placeholder="pap/ui" style="width: calc(100% - 110px);">
+    </div>
+    <div class="form-row" style="margin-top: -8px; padding-left: 110px;">
+        <small style="color: #a0a0a5;">
+            Dashboard → <span id="pap-url-preview" style="font-weight:600;"></span>
+        </small>
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-title"><i class="fa fa-font"></i> Title</label>
+        <input type="text" id="node-config-input-title" placeholder="PAP UI" style="width: calc(100% - 110px);">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-theme"><i class="fa fa-adjust"></i> Theme</label>
+        <select id="node-config-input-theme" style="width: calc(100% - 110px);">
+            <option value="dark">Dark</option>
+            <option value="light">Light</option>
+            <option value="auto">Auto (OS)</option>
+        </select>
+    </div>
+    <div class="form-row" style="align-items: flex-start;">
+        <label style="width:100px; padding-top:4px;"><i class="fa fa-paint-brush"></i> Accent</label>
+        <div>
+            <div id="pap-accent-swatches" style="display:flex; gap:6px; margin-bottom:6px; flex-wrap:wrap;"></div>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <input type="color" id="node-config-input-accentColor"
+                       style="width:32px; height:26px; padding:1px 2px; border:1px solid #555; border-radius:4px; cursor:pointer; background:none;">
+                <small style="color:#a0a0a5;">Custom color</small>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" data-help-name="ui-pap-server">
+    <p>Core config node for PAP UI. Serves the dashboard SPA at the configured path and manages real-time communication via Socket.IO.</p>
+    <h3>URL path</h3>
+    <p>Set the base path where the dashboard is served (default: <code>pap/ui</code>). The dashboard will be accessible at <code>http://&lt;host&gt;:1880/pap/ui/</code>.</p>
+    <p>Examples: <code>home</code> → <code>/home/</code>, <code>smarthome/dash</code> → <code>/smarthome/dash/</code></p>
+    <h3>Setup</h3>
+    <ol>
+        <li>Add one <strong>ui-pap-server</strong> config node (it does not appear in flows).</li>
+        <li>Add <strong>ui-pap-page</strong> config nodes pointing to this server.</li>
+        <li>Add <strong>ui-pap-group</strong> nodes inside each page.</li>
+        <li>Add widget nodes (<strong>ui-pap-light</strong>, <strong>ui-pap-switch</strong>, etc.) referencing a group — wire them into your flows.</li>
+        <li>Deploy and visit the URL shown above.</li>
+    </ol>
+</script>

@@ -1,0 +1,136 @@
+<script type="text/javascript">
+    RED.nodes.registerType('ui-pap-gauge', {
+        category: 'PAP Dashboard',
+        color: '#ff7d44',
+        defaults: {
+            name:        { value: 'Gauge' },
+            subgroup:    { value: '', type: 'ui-pap-subgroup', required: true },
+            order:       { value: 0 },
+            unit:        { value: '' },
+            icon:        { value: 'tachometer' },
+            accentColor: { value: 'orange' },
+            min:         { value: 0 },
+            max:         { value: 100 },
+            decimals:    { value: 0 },
+            driverLabel: { value: '' },
+            gridW:       { value: 1 },
+            gridH:       { value: 1 },
+            ranges:      { value: [] }
+        },
+        inputs:  1,
+        outputs: 0,
+        icon: 'font-awesome/fa-tachometer',
+        label: function () { return this.name || 'Gauge' },
+        paletteLabel: 'gauge',
+        oneditprepare: function () {
+            const self = this
+            $('#pap-gauge-ranges').editableList({
+                addItem: function (container, i, data) {
+                    const row = $('<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;"></div>')
+                    $('<select class="pap-range-type" style="width:68px;font-size:0.85em;">' +
+                        '<option value="abs">value</option>' +
+                        '<option value="pct">%</option>' +
+                      '</select>').val(data.type || 'abs').appendTo(row)
+                    $('<span style="font-size:0.8em;color:#888;">from</span>').appendTo(row)
+                    $('<input type="number" class="pap-range-from" style="width:62px;" placeholder="0">').val(data.from != null ? data.from : '').appendTo(row)
+                    $('<span style="font-size:0.8em;color:#888;">to</span>').appendTo(row)
+                    $('<input type="number" class="pap-range-to" style="width:62px;" placeholder="100">').val(data.to != null ? data.to : '').appendTo(row)
+                    $('<span style="font-size:0.8em;color:#888;">color</span>').appendTo(row)
+                    $('<input type="color" class="pap-range-color" style="width:36px;height:24px;padding:1px 2px;border:1px solid #555;border-radius:4px;cursor:pointer;background:none;">').val(data.color || '#ff7d44').appendTo(row)
+                    row.appendTo(container)
+                },
+                removable: true,
+                addButton: 'Add range'
+            })
+            const ranges = self.ranges || []
+            ranges.forEach(function (r) {
+                $('#pap-gauge-ranges').editableList('addItem', r)
+            })
+        },
+        oneditsave: function () {
+            const ranges = []
+            $('#pap-gauge-ranges').editableList('items').each(function () {
+                const from  = parseFloat($(this).find('.pap-range-from').val())
+                const to    = parseFloat($(this).find('.pap-range-to').val())
+                const type  = $(this).find('.pap-range-type').val()
+                const color = $(this).find('.pap-range-color').val()
+                if (!isNaN(to)) {
+                    ranges.push({
+                        from:  isNaN(from) ? null : from,
+                        to:    to,
+                        type:  type || 'abs',
+                        color: color || '#ff7d44'
+                    })
+                }
+            })
+            this.ranges = ranges
+        }
+    })
+</script>
+
+<script type="text/html" data-template-name="ui-pap-gauge">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="e.g. Power">
+    </div>
+    <div class="form-row">
+        <label for="node-input-subgroup"><i class="fa fa-th-large"></i> Subgroup</label>
+        <input type="text" id="node-input-subgroup">
+    </div>
+    <div class="form-row">
+        <label for="node-input-order"><i class="fa fa-sort"></i> Order</label>
+        <input type="number" id="node-input-order" style="width:80px;" placeholder="0">
+    </div>
+    <div class="form-row">
+        <label for="node-input-unit"><i class="fa fa-subscript"></i> Unit</label>
+        <input type="text" id="node-input-unit" placeholder="e.g. V, A, W, °C">
+    </div>
+    <div class="form-row">
+        <label for="node-input-min"><i class="fa fa-arrow-down"></i> Min</label>
+        <input type="number" id="node-input-min" style="width:80px;" placeholder="0">
+    </div>
+    <div class="form-row">
+        <label for="node-input-max"><i class="fa fa-arrow-up"></i> Max</label>
+        <input type="number" id="node-input-max" style="width:80px;" placeholder="100">
+    </div>
+    <div class="form-row">
+        <label for="node-input-decimals"><i class="fa fa-hashtag"></i> Decimals</label>
+        <input type="number" id="node-input-decimals" min="0" max="6" style="width:60px;" placeholder="0">
+    </div>
+    <div class="form-row">
+        <label for="node-input-icon"><i class="fa fa-image"></i> Icon</label>
+        <input type="text" id="node-input-icon" placeholder="e.g. tachometer, bolt, thermometer-half">
+    </div>
+    <div class="form-row">
+        <label for="node-input-driverLabel"><i class="fa fa-microchip"></i> Driver</label>
+        <input type="text" id="node-input-driverLabel" placeholder="e.g. ARDUINO ADC">
+    </div>
+    <div class="form-row">
+        <label for="node-input-accentColor"><i class="fa fa-paint-brush"></i> Fallback color</label>
+        <select id="node-input-accentColor">
+            <option value="yellow">Yellow</option>
+            <option value="orange">Orange</option>
+            <option value="purple">Purple</option>
+            <option value="blue">Blue</option>
+            <option value="green">Green</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label><i class="fa fa-tint"></i> Color ranges</label>
+        <ol id="pap-gauge-ranges" style="min-width:200px;"></ol>
+        <small style="color:#888;margin-top:4px;display:block;">Each range colors the arc when value ≤ threshold. Overrides fallback color.</small>
+    </div>
+    <div class="form-row">
+        <label><i class="fa fa-th"></i> Grid size</label>
+        <input type="number" id="node-input-gridW" min="1" max="12" style="width:50px;" placeholder="1">
+        <span style="margin: 0 6px;">×</span>
+        <input type="number" id="node-input-gridH" min="1" max="12" style="width:50px;" placeholder="1">
+        <span style="margin-left:8px; font-size:0.85em; color:#888;">cols × rows</span>
+    </div>
+</script>
+
+<script type="text/html" data-help-name="ui-pap-gauge">
+    <p>Arc gauge widget. Input: number or <code>{ value }</code>. Displays arc fill proportional to min–max range. No output.</p>
+    <h3>Color ranges</h3>
+    <p>Define thresholds with colors. The arc takes the color of the first range where <code>value ≤ to</code>. If no range matches, the fallback accent color is used.</p>
+</script>
