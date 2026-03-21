@@ -37,8 +37,24 @@ module.exports = function (RED) {
             if (!server) server = resolveServer(RED, config)
             if (!server) return
 
+            let updated = false
             if (msg.config && typeof msg.config === 'object') {
                 Object.assign(node._dynConfig, msg.config)
+                updated = true
+            }
+
+            const aliases = { name: 'label', color: 'accentColor' }
+            const allowedProps = ['label', 'name', 'unit', 'icon', 'accentColor', 'color', 'readOnly', 'min', 'max', 'step', 'decimals', 'driverLabel', 'gridW', 'gridH']
+            
+            for (const prop of allowedProps) {
+                if (msg[prop] !== undefined) {
+                    const targetKey = aliases[prop] || prop
+                    node._dynConfig[targetKey] = msg[prop]
+                    updated = true
+                }
+            }
+
+            if (updated) {
                 server.registerWidget({
                     id: node.id, type: 'sensor',
                     subgroupId: node._ids.subgroupId,

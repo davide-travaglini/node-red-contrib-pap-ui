@@ -113,7 +113,7 @@ A subgroup of widgets within a group.
 An interactive on/off tile.
 
 **Input:** `msg.payload` — `true`/`false` or any truthy/falsy value → sets the switch state.
-**Input:** `msg.config` — object with property overrides (see [Dynamic Configuration](#dynamic-configuration)).
+**Input:** `msg.config` or root properties (e.g. `msg.name`) — property overrides (see [Dynamic Configuration](#dynamic-configuration)).
 
 **Output:** `msg.payload = { on: true/false }` — emitted when the user clicks the tile (unless Read only).
 
@@ -141,7 +141,7 @@ An interactive on/off tile.
 A numeric value display tile. Can optionally act as a writable setpoint with up/down buttons.
 
 **Input:** `msg.payload` — a number or `{ value: number }` → updates the displayed value.
-**Input:** `msg.config` — object with property overrides (see [Dynamic Configuration](#dynamic-configuration)).
+**Input:** `msg.config` or root properties (e.g. `msg.name`) — property overrides (see [Dynamic Configuration](#dynamic-configuration)).
 
 **Output:** `msg.payload = { value: number }` — emitted when the user clicks ◀ ▶ (only when not Read only).
 
@@ -166,7 +166,7 @@ A numeric value display tile. Can optionally act as a writable setpoint with up/
 A read-only arc gauge tile (tachometer style, 270° sweep).
 
 **Input:** `msg.payload` — a number or `{ value: number }` → updates the arc fill.
-**Input:** `msg.config` — object with property overrides (see [Dynamic Configuration](#dynamic-configuration)).
+**Input:** `msg.config` or root properties (e.g. `msg.name`) — property overrides (see [Dynamic Configuration](#dynamic-configuration)).
 
 **Output:** none.
 
@@ -208,14 +208,14 @@ Ranges are evaluated in ascending `from` order. The arc takes the color of the *
 
 ## Dynamic Configuration
 
-All widget nodes (switch, sensor, gauge) accept a `msg.config` object on their input to override static configuration at runtime — **without redeploying**.
+All widget nodes (switch, sensor, gauge) accept a `msg.config` object or direct **root-level `msg` properties** (e.g., `msg.name`, `msg.color`) on their input to override static configuration at runtime — **without redeploying**.
 
 ```js
-// Change gauge scale at runtime
-node.send({ config: { min: 0, max: 500, unit: 'W' }, payload: 237.5 })
+// Override sensor label and accent color using root properties
+node.send({ name: 'Room Temp', color: 'blue', payload: 22.4 })
 
-// Change sensor label and accent color
-node.send({ config: { label: 'Room Temp', accentColor: 'blue' }, payload: 22.4 })
+// Change gauge scale at runtime using msg.config
+node.send({ config: { min: 0, max: 500, unit: 'W' }, payload: 237.5 })
 
 // Update gauge color ranges dynamically
 node.send({
@@ -230,7 +230,9 @@ node.send({
 })
 ```
 
-Properties in `msg.config` are **merged** with the node's static config and persist until another `msg.config` is received or Node-RED is redeployed. `msg.payload` and `msg.config` can be sent together in the same message.
+Properties are **merged** with the node's static config and persist until overridden again or Node-RED is redeployed. `msg.payload` and properties can be sent together in the same message.
+
+Supported direct override properties vary by node but generally include: `name` (or `label`), `color` (or `accentColor`), `icon`, `iconOn`, `iconOff`, `unit`, `min`, `max`, `step`, `decimals`, `driverLabel`, `readOnly`, `ranges`, `gridW`, `gridH`.
 
 ---
 
