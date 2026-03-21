@@ -123,6 +123,7 @@ function handleAction (widget) {
 .widget-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(80px, 110px));
+    grid-auto-rows: minmax(80px, 110px);
     gap: 10px;
 }
 

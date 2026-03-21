@@ -4,8 +4,7 @@
         :class="[`widget-tile--${widget.type}`, { 'is-on': isOn, 'is-readonly': isReadOnly }, accentClass]"
         :style="{
             '--w': widget.config.gridW || 1,
-            '--h': widget.config.gridH || 1,
-            'aspectRatio': `${widget.config.gridW || 1} / ${widget.config.gridH || 1}`
+            '--h': widget.config.gridH || 1
         }"
         @click="handleClick"
     >
@@ -250,7 +249,7 @@ function handleClick () {
 .widget-tile__main {
     flex: 1;
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: center;
     gap: 3px;
     padding: 2px 0;
