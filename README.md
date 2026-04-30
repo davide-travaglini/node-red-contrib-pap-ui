@@ -9,7 +9,7 @@ A tile-based, real-time dashboard built with Vue 3 and Socket.IO. Configure your
 ## Screenshots
 Based on [Victor Lucachi's concept](https://dribbble.com/shots/10356530-Node-Red-Dashboard-Concept)
 
-![PAP UI Dashboard](mockup.webp)
+![PAP UI Dashboard](https://cdn.dribbble.com/userupload/26193859/file/original-825747dd05de34090ed4f25fbaaf9665.png?resize=752x&vertical=center)
 
 ---
 
