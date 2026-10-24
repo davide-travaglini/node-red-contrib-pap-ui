@@ -1,5 +1,13 @@
 # node-red-contrib-pap-ui
 
+[![npm version](https://img.shields.io/npm/v/node-red-contrib-pap-ui.svg)](https://www.npmjs.com/package/node-red-contrib-pap-ui)
+[![npm downloads](https://img.shields.io/npm/dm/node-red-contrib-pap-ui.svg)](https://www.npmjs.com/package/node-red-contrib-pap-ui)
+[![Node.js ≥16](https://img.shields.io/badge/node-%3E%3D16-brightgreen.svg)](https://nodejs.org)
+[![Node-RED ≥2](https://img.shields.io/badge/node--red-%3E%3D2.0-red.svg)](https://nodered.org)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+If you'd like to support me, [![Ko-fi](https://img.shields.io/badge/Buy%20me%20a%20coffee-%23FF5E5B?logo=ko-fi&logoColor=white&style=flat)](https://ko-fi.com/davidetravaglini)
+
 > **Standalone home automation dashboard for Node-RED** — no Dashboard 2.0 required.
 
 A tile-based, real-time dashboard built with Vue 3 and Socket.IO. Configure your layout directly in the Node-RED editor using a hierarchy of config nodes, then wire widget nodes to your data flows.
@@ -9,7 +17,7 @@ A tile-based, real-time dashboard built with Vue 3 and Socket.IO. Configure your
 ## Screenshots
 Based on [Victor Lucachi's concept](https://dribbble.com/shots/10356530-Node-Red-Dashboard-Concept)
 
-![PAP UI Dashboard](mockup.webp)
+![PAP UI Dashboard](https://cdn.dribbble.com/userupload/26193859/file/original-825747dd05de34090ed4f25fbaaf9665.png?resize=752x&vertical=center)
 
 ---
 
