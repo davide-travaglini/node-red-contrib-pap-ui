@@ -14,7 +14,10 @@ module.exports = function (RED) {
             }
         }
 
-        this.on('close', function () {})
+        this.on('close', function (done) {
+            if (server) server.unregisterPage(this.id)
+            done()
+        })
     }
 
     RED.nodes.registerType('ui-pap-page', UIPapPageNode)

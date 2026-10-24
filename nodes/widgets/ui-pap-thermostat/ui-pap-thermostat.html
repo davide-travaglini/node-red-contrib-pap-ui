@@ -1,0 +1,99 @@
+<script type="text/javascript">
+    RED.nodes.registerType('ui-pap-thermostat', {
+        category: 'PAP Dashboard',
+        color: '#ff9966',
+        defaults: {
+            name:        { value: 'Thermostat' },
+            subgroup:    { value: '', type: 'ui-pap-subgroup', required: true },
+            order:       { value: 0 },
+            icon:        { value: 'thermometer-half' },
+            accentColor: { value: 'orange' },
+            readOnly:    { value: false },
+            unit:        { value: '°C' },
+            min:         { value: 5 },
+            max:         { value: 35 },
+            step:        { value: 0.5 },
+            decimals:    { value: 1 },
+            modes:       { value: 'Manual,Automatic,Off' },
+            driverLabel: { value: '' },
+            gridW:       { value: 1 },
+            gridH:       { value: 1 }
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: 'font-awesome/fa-thermometer-half',
+        label: function () { return this.name || 'Thermostat' },
+        paletteLabel: 'thermostat'
+    })
+</script>
+
+<script type="text/html" data-template-name="ui-pap-thermostat">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="e.g. Soggiorno">
+    </div>
+    <div class="form-row">
+        <label for="node-input-subgroup"><i class="fa fa-th-large"></i> Subgroup</label>
+        <input type="text" id="node-input-subgroup">
+    </div>
+    <div class="form-row">
+        <label for="node-input-order"><i class="fa fa-sort"></i> Order</label>
+        <input type="number" id="node-input-order" style="width:80px;" placeholder="0">
+    </div>
+    <div class="form-row">
+        <label for="node-input-driverLabel"><i class="fa fa-microchip"></i> Driver</label>
+        <input type="text" id="node-input-driverLabel" placeholder="e.g. BTICINO X8000">
+    </div>
+    <div class="form-row">
+        <label for="node-input-icon"><i class="fa fa-image"></i> Icon</label>
+        <input type="text" id="node-input-icon" placeholder="thermometer-half">
+    </div>
+    <div class="form-row">
+        <label for="node-input-unit"><i class="fa fa-superscript"></i> Unit</label>
+        <input type="text" id="node-input-unit" style="width:80px;" placeholder="°C">
+    </div>
+    <div class="form-row">
+        <label for="node-input-readOnly"><i class="fa fa-lock"></i> Read only</label>
+        <input type="checkbox" id="node-input-readOnly" style="width:auto; margin-left:4px;">
+    </div>
+    <div class="form-row">
+        <label><i class="fa fa-arrows-h"></i> Min / Max</label>
+        <input type="number" id="node-input-min" style="width:70px;" placeholder="5">
+        <span style="margin: 0 6px;">to</span>
+        <input type="number" id="node-input-max" style="width:70px;" placeholder="35">
+    </div>
+    <div class="form-row">
+        <label><i class="fa fa-step-forward"></i> Step / Decimals</label>
+        <input type="number" id="node-input-step" style="width:70px;" placeholder="0.5">
+        <input type="number" id="node-input-decimals" style="width:70px; margin-left:8px;" placeholder="1">
+    </div>
+    <div class="form-row">
+        <label for="node-input-modes"><i class="fa fa-list"></i> Modes</label>
+        <input type="text" id="node-input-modes" placeholder="Manual,Automatic,Off">
+    </div>
+    <div class="form-row">
+        <label for="node-input-accentColor"><i class="fa fa-paint-brush"></i> Accent</label>
+        <select id="node-input-accentColor">
+            <option value="yellow">Yellow</option>
+            <option value="orange">Orange</option>
+            <option value="purple">Purple</option>
+            <option value="blue">Blue</option>
+            <option value="green">Green</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label><i class="fa fa-th"></i> Grid size</label>
+        <input type="number" id="node-input-gridW" min="1" max="12" style="width:50px;" placeholder="1">
+        <span style="margin: 0 6px;">×</span>
+        <input type="number" id="node-input-gridH" min="1" max="12" style="width:50px;" placeholder="1">
+        <span style="margin-left:8px; font-size:0.85em; color:#888;">colonne × righe</span>
+    </div>
+</script>
+
+<script type="text/html" data-help-name="ui-pap-thermostat">
+    <p>Thermostat widget — shows the current measured temperature and lets the user adjust the
+       setpoint (±step buttons) and cycle through modes.</p>
+    <p><b>Input:</b> <code>{ value: currentTemp, setPoint, mode }</code> (merged with current
+       state — send only the fields that changed).</p>
+    <p><b>Output</b> on interaction: <code>{ setPoint, mode }</code> (unless Read only).</p>
+</script>

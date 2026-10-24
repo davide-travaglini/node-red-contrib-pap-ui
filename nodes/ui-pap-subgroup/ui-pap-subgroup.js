@@ -12,7 +12,10 @@ module.exports = function (RED) {
             server.registerSubgroup(this)
         }
 
-        this.on('close', function () {})
+        this.on('close', function (done) {
+            if (server) server.unregisterSubgroup(this.id)
+            done()
+        })
     }
 
     RED.nodes.registerType('ui-pap-subgroup', UIPapSubgroupNode)

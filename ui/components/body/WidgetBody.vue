@@ -69,9 +69,13 @@ const isEmpty = computed(() =>
 
 function handleAction (widget) {
     const state = devicesStore.stateOf(widget.id)
-    if (widget.type === 'switch') {
+    if (widget.type === 'switch' || widget.type === 'light') {
         if (widget.config.readOnly) return
         devicesStore.sendAction(widget.id, { on: !(state?.on ?? false) })
+    } else if (widget.type === 'button') {
+        devicesStore.sendAction(widget.id, true)
+    } else if (widget.type === 'scene') {
+        devicesStore.sendAction(widget.id, true, widget.config.label)
     }
 }
 </script>

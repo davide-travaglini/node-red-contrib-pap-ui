@@ -64,6 +64,28 @@ The root configuration node. Creates the HTTP routes and Socket.IO server.
 | Path | `pap/ui` | URL base path. Dashboard at `http://host:port/{path}` |
 | Theme | `dark` | `dark`, `light`, or `auto` (follows OS preference) |
 | Title | `PAP UI` | Dashboard title shown in the browser tab |
+| Auth | — | Optional reference to a `ui-pap-auth` config node. Leave empty for a public dashboard. |
+
+---
+
+### `ui-pap-auth` *(config)*
+
+Stores up to 10 username/password pairs (bcrypt-hashed at runtime). See
+[Authentication](#authentication--ui-pap-auth) above.
+
+---
+
+### `ui-pap-tunnel` *(config)*
+
+Starts an ngrok tunnel exposing the Node-RED HTTP port publicly. See
+[Remote access](#remote-access--ui-pap-tunnel) above.
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| Authtoken | — | ngrok authtoken (credential, encrypted at rest) |
+| Static domain | — | Free ngrok static domain, e.g. `yourname.ngrok-free.app` |
+| Enabled | `false` | Starts the tunnel on deploy when checked |
+| I understand the risk | `false` | Required to start the tunnel if the editor has no `adminAuth` |
 
 ---
 
@@ -281,34 +303,198 @@ ui-pap-widget output → downstream flow
 
 ---
 
+### `ui-pap-button`
+
+A momentary push-button tile. No input state — every tap emits an output.
+
+**Output:** `msg.payload = true` on every click.
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| Name | `Button` | Display label |
+| Subgroup | — | Reference to `ui-pap-subgroup` |
+| Order | `0` | Sort order |
+| Icon | `hand-pointer-o` | Font Awesome icon name |
+| Accent Color | `blue` | Tile tint color |
+| Driver | — | Hardware label |
+| Grid size | `1 × 1` | Width × height in tile units |
+
+---
+
+### `ui-pap-slider`
+
+A writable range widget rendered as a horizontal drag slider.
+
+**Input:** `msg.payload` — a number or `{ value: number }` → updates the fill.
+**Output:** `msg.payload = { value: number }`, emitted when the user releases the slider (unless Read only).
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| Name | `Slider` | Display label |
+| Subgroup | — | Reference to `ui-pap-subgroup` |
+| Unit | — | Display unit |
+| Read only | `false` | If checked, the slider is disabled |
+| Min / Max / Step / Decimals | `0 / 100 / 1 / 0` | Range bounds |
+| Accent Color | `blue` | Tile tint color |
+| Driver | — | Hardware label |
+| Grid size | `2 × 1` | Width × height in tile units |
+
+---
+
+### `ui-pap-light`
+
+An on/off tile with an optional inline brightness slider.
+
+**Input:** `msg.payload` — boolean (on/off) or `{ on, brightness, color }` merged with current state.
+**Output:** `{ on }` on tap, `{ on: true, brightness }` when the brightness slider is released (unless Read only).
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| Name | `Light` | Display label |
+| Subgroup | — | Reference to `ui-pap-subgroup` |
+| Icon ON / OFF | `lightbulb-o` | Font Awesome icon names |
+| Read only | `false` | If checked, tile and slider are display-only |
+| Brightness | `true` | Shows an inline 0–100 brightness slider when the light is on |
+| Color | `false` | Reserved — color payload is passed through, no color-wheel UI yet |
+| Accent Color | `yellow` | Tile background color when ON |
+| Driver | — | Hardware label |
+| Grid size | `1 × 1` | Width × height in tile units |
+
+---
+
+### `ui-pap-thermostat`
+
+Shows the current measured temperature and lets the user adjust the setpoint and cycle modes.
+
+**Input:** `msg.payload = { value: currentTemp, setPoint, mode }` (merge — send only the fields that changed).
+**Output:** `{ setPoint, mode }`, emitted on ± setpoint buttons or when tapping the mode pill (unless Read only).
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| Name | `Thermostat` | Display label |
+| Subgroup | — | Reference to `ui-pap-subgroup` |
+| Unit | `°C` | Display unit |
+| Read only | `false` | If checked, hides the setpoint stepper and mode pill |
+| Min / Max / Step / Decimals | `5 / 35 / 0.5 / 1` | Setpoint bounds |
+| Modes | `Manual,Automatic,Off` | Comma-separated list, cycled by tapping the mode pill |
+| Accent Color | `orange` | Tile tint color |
+| Driver | — | Hardware label |
+| Grid size | `1 × 1` | Width × height in tile units |
+
+---
+
+### `ui-pap-scene`
+
+A scene-activation tile. No input state — every tap emits an output with the scene name as topic.
+
+**Output:** `msg.payload = true`, `msg.topic = <scene name>` on every click.
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| Name | `Scene` | Display label, also used as `msg.topic` |
+| Subgroup | — | Reference to `ui-pap-subgroup` |
+| Icon | `bolt` | Font Awesome icon name |
+| Accent Color | `purple` | Tile tint color |
+| Driver | — | Hardware label |
+| Grid size | `1 × 1` | Width × height in tile units |
+
+---
+
+### `ui-pap-chart`
+
+A time-series line chart tile. No output — pure display.
+
+**Input:** `msg.payload` — a number or `{ value: number }`. Each input appends one point to a
+rolling history (capped at "History points"), shown as a mini line chart with the latest value
+and a min/max readout for the visible window. History is persisted via Node-RED context together
+with the rest of the dashboard state.
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| Name | `Chart` | Display label |
+| Subgroup | — | Reference to `ui-pap-subgroup` |
+| Unit | — | Display unit |
+| Decimals | `1` | Decimal places to show |
+| History points | `60` | Number of samples kept in the rolling window |
+| Accent Color | `blue` | Tile tint color |
+| Driver | — | Hardware label |
+| Grid size | `2 × 1` | Width × height in tile units |
+
+---
+
+## PWA
+
+The dashboard is installable as a Progressive Web App — a manifest and service worker (built
+with `vite-plugin-pwa`) cache the app shell for offline use and let browsers offer "Install app".
+`start_url`/`scope` are relative, so installation works correctly under any `ui-pap-server` `path`.
+API calls (`/api/*`) and Socket.IO are never cached — they always hit the network.
+
+Note: the manifest's name/icon/theme are fixed at build time and do not follow a specific
+`ui-pap-server` instance's `title`/`accentColor`.
+
+---
+
+## Authentication — `ui-pap-auth`
+
+Add a **`ui-pap-auth`** config node to require a login before the dashboard (and its REST API /
+Socket.IO data) becomes accessible. Stores up to 10 username/password pairs (bcrypt-hashed at
+runtime). Reference it from the `Auth` field on `ui-pap-server` — leave that field empty to keep
+the dashboard public (previous, default behavior).
+
+Because Node-RED never sends stored passwords back to the editor, **every password must be
+re-typed each time you edit and save the `ui-pap-auth` node** — leaving a row's password empty
+removes that user on save.
+
+---
+
+## Remote access — `ui-pap-tunnel`
+
+Add a **`ui-pap-tunnel`** config node to expose this Node-RED instance over the internet via an
+[ngrok](https://ngrok.com) tunnel — no VPN, no router port-forwarding, no account on the router.
+Use ngrok's free **static domain** (e.g. `yourname.ngrok-free.app`) so the URL never changes,
+which is required for the dashboard's installed PWA to keep working across restarts.
+
+> ⚠️ **Security:** ngrok tunnels the *entire* Node-RED HTTP port, not just the PAP UI dashboard
+> path — if the Node-RED editor isn't protected, the tunnel exposes it too. The node **refuses to
+> start** unless `adminAuth` (or `httpAdminRoot: false`) is set in `settings.js`, or you explicitly
+> check "I understand the risk" on the node. Pair this with `ui-pap-auth` so the dashboard itself
+> also requires a login. See the node's Help panel for details.
+
+---
+
 ## Beta Limitations
 
-- **No persistence** — widget states reset when Node-RED restarts. Wire your devices to send initial values on startup.
-- **No authentication** — the dashboard is publicly accessible on the Node-RED port.
-- **Scenes UI** — the scene save/restore API exists but there is no UI to manage scenes yet.
-- **Mobile** — layout is responsive but a proper bottom-navigation for mobile is not yet implemented.
+- **Scenes UI** — the scene save/restore REST API exists and now actually works (see fixed-route
+  note below), but there is still no editor UI to manage saved scenes — use `ui-pap-scene` tiles
+  for simple trigger-a-flow scenes in the meantime.
 - **Single server** — only one `ui-pap-server` instance is supported per Node-RED process.
+- **Light color** — `hasColor` passes a `color` field through but there is no color-wheel picker
+  in the tile yet; drive it from a flow (e.g. a separate color-picker UI elsewhere).
 
 ---
 
 ## Roadmap
 
-- [ ] `ui-pap-button` — momentary push button
-- [ ] `ui-pap-slider` — range slider with min/max/step
-- [ ] `ui-pap-chart` — time-series line/bar chart
-- [ ] `ui-pap-scene` — scene activation tile
-- [ ] Light widget with color wheel *(paused for beta)*
-- [ ] Thermostat widget with history graph *(paused for beta)*
-- [ ] Mobile bottom navigation
-- [ ] Persistent state via Node-RED context
-- [ ] Authentication / access control
+- [x] `ui-pap-button` — momentary push button
+- [x] `ui-pap-slider` — range slider with min/max/step
+- [x] `ui-pap-scene` — scene activation tile
+- [x] Light widget (on/off + brightness slider; color is pass-through, no wheel yet)
+- [x] Thermostat widget (setpoint + mode; no history graph yet)
+- [x] Mobile bottom navigation
+- [x] Persistent state via Node-RED context
+- [x] PWA (installable dashboard, offline app shell)
+- [x] Authentication / access control (`ui-pap-auth`)
+- [x] Remote access tunnel (`ui-pap-tunnel`, ngrok)
+- [x] `ui-pap-chart` — time-series line chart
+- [ ] Light widget color wheel
+- [ ] Thermostat widget history graph / sparkline
 
 ---
 
 ## Development
 
 ```bash
-git clone https://github.com/davide-vigano/node-red-contrib-pap-ui
+git clone https://github.com/davide-travaglini/node-red-contrib-pap-ui
 cd node-red-contrib-pap-ui
 npm install
 
@@ -329,4 +515,4 @@ npm install /path/to/node-red-contrib-pap-ui
 
 ## License
 
-Apache-2.0 © Davide Vigano
+Apache-2.0 © Davide Travaglini

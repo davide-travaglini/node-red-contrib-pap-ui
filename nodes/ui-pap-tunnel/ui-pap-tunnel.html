@@ -1,0 +1,76 @@
+<script type="text/javascript">
+    RED.nodes.registerType('ui-pap-tunnel', {
+        category: 'config',
+        color: '#2b2b30',
+        defaults: {
+            name:          { value: 'PAP Tunnel' },
+            domain:        { value: '' },
+            enabled:       { value: false },
+            forceInsecure: { value: false }
+        },
+        credentials: {
+            authtoken: { type: 'password' }
+        },
+        label: function () {
+            return this.name || 'PAP Tunnel'
+        },
+        icon: 'font-awesome/fa-cloud-upload'
+    })
+</script>
+
+<script type="text/html" data-template-name="ui-pap-tunnel">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="PAP Tunnel">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-authtoken"><i class="fa fa-key"></i> Authtoken</label>
+        <input type="password" id="node-config-input-authtoken" placeholder="ngrok authtoken" style="width: calc(100% - 110px);">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-domain"><i class="fa fa-globe"></i> Static domain</label>
+        <input type="text" id="node-config-input-domain" placeholder="yourname.ngrok-free.app" style="width: calc(100% - 110px);">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-enabled" style="width:auto;"><i class="fa fa-power-off"></i> Enabled</label>
+        <input type="checkbox" id="node-config-input-enabled" style="width:auto; margin-left:4px;">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-forceInsecure" style="width:auto;"><i class="fa fa-exclamation-triangle"></i> I understand the risk</label>
+        <input type="checkbox" id="node-config-input-forceInsecure" style="width:auto; margin-left:4px;">
+    </div>
+    <div class="form-row">
+        <small style="color:#d08a3a;">
+            Exposes the WHOLE Node-RED HTTP port publicly — including the flow editor —
+            not just the dashboard. Without <code>adminAuth</code> in <code>settings.js</code>,
+            the node refuses to start unless "I understand the risk" is checked. See Help.
+        </small>
+    </div>
+</script>
+
+<script type="text/html" data-help-name="ui-pap-tunnel">
+    <p>Exposes this Node-RED instance on the internet via an ngrok tunnel — no VPN, no router
+    port-forwarding, no account on the router required.</p>
+    <h3>Setup</h3>
+    <ol>
+        <li>Create a free account at <code>ngrok.com</code> and copy your authtoken.</li>
+        <li>Claim a free static domain in the ngrok dashboard (e.g. <code>yourname.ngrok-free.app</code>)
+        so the URL never changes — required for the dashboard's installed PWA to keep working across restarts.</li>
+        <li>Paste the authtoken and domain here, check <em>Enabled</em>, and deploy.</li>
+        <li>The public URL appears in this node's status once connected.</li>
+    </ol>
+    <h3>⚠️ Security — read before enabling</h3>
+    <p>ngrok tunnels the <strong>entire</strong> Node-RED HTTP port, not just the PAP UI dashboard
+    path. If the Node-RED editor itself is not protected, anyone with the tunnel URL can open
+    <code>/</code> and edit your flows.</p>
+    <p>Before enabling this node, set one of the following in your Node-RED <code>settings.js</code>:</p>
+    <ul>
+        <li><code>adminAuth</code> — require a login for the flow editor, or</li>
+        <li><code>httpAdminRoot: false</code> — disable the editor over HTTP entirely.</li>
+    </ul>
+    <p>Without one of those, the node <strong>refuses to start the tunnel</strong> and logs an
+    error instead — check <em>"I understand the risk"</em> only if you deliberately want to
+    expose the unprotected editor anyway.</p>
+    <p>Pair this with a <strong>ui-pap-auth</strong> node on your <strong>ui-pap-server</strong> so the
+    dashboard itself also requires a login.</p>
+</script>

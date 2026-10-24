@@ -9,7 +9,10 @@ module.exports = function (RED) {
             server.registerArea(this)
         }
 
-        this.on('close', function () {})
+        this.on('close', function (done) {
+            if (server) server.unregisterArea(this.id)
+            done()
+        })
     }
 
     RED.nodes.registerType('ui-pap-area', UIPapAreaNode)

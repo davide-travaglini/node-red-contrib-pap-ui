@@ -32,9 +32,10 @@ module.exports = function (RED) {
             }, node)
         })
 
-        node.on('input', function (msg) {
+        node.on('input', function (msg, send, done) {
+            try {
             if (!server) server = resolveServer(RED, config)
-            if (!server) return
+            if (!server) return done()
 
             let updated = false
             if (msg.config && typeof msg.config === 'object') {
@@ -65,10 +66,14 @@ module.exports = function (RED) {
                 server.io.emit('pap:layout', server.buildLayoutPayload())
             }
 
-            if (msg.payload !== undefined) {
-                const value = typeof msg.payload === 'object' ? msg.payload : { value: msg.payload }
+            if (msg.payload !== undefined && msg.payload !== null) {
+                const value = (typeof msg.payload === 'object') ? msg.payload : { value: msg.payload }
                 server.broadcastState(node.id, value)
                 node.status({ fill: 'blue', shape: 'dot', text: String(value.value ?? msg.payload) })
+            }
+            done()
+            } catch (err) {
+                done(err)
             }
         })
 

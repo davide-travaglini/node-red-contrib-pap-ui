@@ -1,0 +1,96 @@
+<script type="text/javascript">
+    RED.nodes.registerType('ui-pap-light', {
+        category: 'PAP Dashboard',
+        color: '#ffcc66',
+        defaults: {
+            name:          { value: 'Light' },
+            subgroup:      { value: '', type: 'ui-pap-subgroup', required: true },
+            order:         { value: 0 },
+            iconOn:        { value: 'lightbulb-o' },
+            iconOff:       { value: 'lightbulb-o' },
+            accentColor:   { value: 'yellow' },
+            readOnly:      { value: false },
+            confirmOff:    { value: false },
+            hasBrightness: { value: true },
+            hasColor:      { value: false },
+            driverLabel:   { value: '' },
+            gridW:         { value: 1 },
+            gridH:         { value: 1 }
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: 'font-awesome/fa-lightbulb-o',
+        label: function () { return this.name || 'Light' },
+        paletteLabel: 'light'
+    })
+</script>
+
+<script type="text/html" data-template-name="ui-pap-light">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="e.g. Living Room">
+    </div>
+    <div class="form-row">
+        <label for="node-input-subgroup"><i class="fa fa-th-large"></i> Subgroup</label>
+        <input type="text" id="node-input-subgroup">
+    </div>
+    <div class="form-row">
+        <label for="node-input-order"><i class="fa fa-sort"></i> Order</label>
+        <input type="number" id="node-input-order" style="width:80px;" placeholder="0">
+    </div>
+    <div class="form-row">
+        <label for="node-input-driverLabel"><i class="fa fa-microchip"></i> Driver</label>
+        <input type="text" id="node-input-driverLabel" placeholder="e.g. ZIGBEE BULB">
+    </div>
+    <div class="form-row">
+        <label for="node-input-iconOn"><i class="fa fa-toggle-on"></i> Icon ON</label>
+        <input type="text" id="node-input-iconOn" placeholder="lightbulb-o">
+    </div>
+    <div class="form-row">
+        <label for="node-input-iconOff"><i class="fa fa-toggle-off"></i> Icon OFF</label>
+        <input type="text" id="node-input-iconOff" placeholder="lightbulb-o">
+    </div>
+    <div class="form-row">
+        <label for="node-input-readOnly"><i class="fa fa-lock"></i> Read only</label>
+        <input type="checkbox" id="node-input-readOnly" style="width:auto; margin-left:4px;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-confirmOff"><i class="fa fa-question-circle"></i> Confirm OFF</label>
+        <input type="checkbox" id="node-input-confirmOff" style="width:auto; margin-left:4px;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-hasBrightness"><i class="fa fa-sun-o"></i> Brightness</label>
+        <input type="checkbox" id="node-input-hasBrightness" style="width:auto; margin-left:4px;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-hasColor"><i class="fa fa-paint-brush"></i> Color</label>
+        <input type="checkbox" id="node-input-hasColor" style="width:auto; margin-left:4px;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-accentColor"><i class="fa fa-paint-brush"></i> Accent</label>
+        <select id="node-input-accentColor">
+            <option value="yellow">Yellow</option>
+            <option value="orange">Orange</option>
+            <option value="purple">Purple</option>
+            <option value="blue">Blue</option>
+            <option value="green">Green</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label><i class="fa fa-th"></i> Grid size</label>
+        <input type="number" id="node-input-gridW" min="1" max="12" style="width:50px;" placeholder="1">
+        <span style="margin: 0 6px;">×</span>
+        <input type="number" id="node-input-gridH" min="1" max="12" style="width:50px;" placeholder="1">
+        <span style="margin-left:8px; font-size:0.85em; color:#888;">colonne × righe</span>
+    </div>
+</script>
+
+<script type="text/html" data-help-name="ui-pap-light">
+    <p>Light widget — on/off, with optional brightness slider and color swatch (hex) inline
+       on the tile.</p>
+    <p><b>Input:</b> boolean → on/off, or <code>{ on, brightness, color }</code> (merged with
+       current state).</p>
+    <p><b>Output</b> on interaction: <code>{ on }</code> on tap, <code>{ on: true, brightness }</code>
+       when dragging the brightness slider, <code>{ on: true, color }</code> when picking a color
+       (unless Read only).</p>
+</script>

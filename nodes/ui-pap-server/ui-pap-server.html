@@ -7,7 +7,8 @@
             path:        { value: 'pap/ui' },
             theme:       { value: 'dark' },
             title:       { value: 'PAP UI' },
-            accentColor: { value: '#3dd28d' }
+            accentColor: { value: '#3dd28d' },
+            auth:        { value: '', type: 'ui-pap-auth', required: false }
         },
         label: function () {
             return this.name || 'PAP Dashboard'
@@ -92,6 +93,13 @@
             </div>
         </div>
     </div>
+    <div class="form-row">
+        <label for="node-config-input-auth"><i class="fa fa-lock"></i> Auth</label>
+        <input type="text" id="node-config-input-auth" style="width: calc(100% - 110px);">
+    </div>
+    <div class="form-row" style="margin-top: -8px; padding-left: 110px;">
+        <small style="color: #a0a0a5;">Optional. Leave empty for a public, unauthenticated dashboard.</small>
+    </div>
 </script>
 
 <script type="text/html" data-help-name="ui-pap-server">
@@ -107,4 +115,11 @@
         <li>Add widget nodes (<strong>ui-pap-light</strong>, <strong>ui-pap-switch</strong>, etc.) referencing a group — wire them into your flows.</li>
         <li>Deploy and visit the URL shown above.</li>
     </ol>
+    <h3>Auth</h3>
+    <p>Optionally reference a <strong>ui-pap-auth</strong> config node to require a login before the
+    dashboard (and its API/Socket.IO data) is accessible. Leave empty for a public dashboard
+    (previous behavior, no login).</p>
+    <h3>PWA</h3>
+    <p>The dashboard is installable as a Progressive Web App (manifest + offline shell caching via
+    a service worker) — look for "Install app" in the browser's address bar or menu.</p>
 </script>

@@ -3,6 +3,7 @@ import { useConnectionStore } from '../stores/connection.js'
 import { useLayoutStore } from '../stores/layout.js'
 import { useDevicesStore } from '../stores/devices.js'
 import { useScenesStore } from '../stores/scenes.js'
+import { useLogStore }    from '../stores/log.js'
 
 let socket = null
 
@@ -39,6 +40,14 @@ export function useSocket () {
 
         socket.on('pap:scenes', (scenes) => {
             useScenesStore().setScenes(scenes)
+        })
+
+        socket.on('pap:log-snapshot', (entries) => {
+            useLogStore().setEntries(entries)
+        })
+
+        socket.on('pap:log-entry', (entry) => {
+            useLogStore().appendEntry(entry)
         })
 
         socket.on('pap:layout-changed', () => {

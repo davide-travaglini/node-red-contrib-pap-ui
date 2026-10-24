@@ -1,6 +1,7 @@
 <template>
     <div class="pap-layout">
         <PrimaryNav />
+        <MobileNav />
         <SecondaryNav v-if="showSecondaryNav" :page="currentPage" />
         <main class="pap-body">
             <router-view />
@@ -13,6 +14,7 @@ import { computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import PrimaryNav   from './components/layout/PrimaryNav.vue'
 import SecondaryNav from './components/layout/SecondaryNav.vue'
+import MobileNav    from './components/layout/MobileNav.vue'
 import { useSocket }      from './composables/useSocket.js'
 import { useLayoutStore } from './stores/layout.js'
 import { useUiStore }     from './stores/ui.js'

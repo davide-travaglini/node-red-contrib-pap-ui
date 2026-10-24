@@ -11,7 +11,10 @@ module.exports = function (RED) {
             server.registerGroup(this)
         }
 
-        this.on('close', function () {})
+        this.on('close', function (done) {
+            if (server) server.unregisterGroup(this.id)
+            done()
+        })
     }
 
     RED.nodes.registerType('ui-pap-group', UIPapGroupNode)

@@ -16,6 +16,7 @@ module.exports = function (RED) {
                 iconOff:     config.iconOff     || 'toggle-off',
                 accentColor: config.accentColor || 'blue',
                 readOnly:    !!config.readOnly,
+                confirmOff:  !!config.confirmOff,
                 driverLabel: config.driverLabel || '',
                 gridW:       config.gridW       || 1,
                 gridH:       config.gridH       || 1
@@ -29,9 +30,10 @@ module.exports = function (RED) {
             }, node)
         })
 
-        node.on('input', function (msg) {
+        node.on('input', function (msg, send, done) {
+            try {
             if (!server) server = resolveServer(RED, config)
-            if (!server) return
+            if (!server) return done()
 
             let updated = false
             if (msg.config && typeof msg.config === 'object') {
@@ -40,7 +42,7 @@ module.exports = function (RED) {
             }
 
             const aliases = { name: 'label', color: 'accentColor' }
-            const allowedProps = ['label', 'name', 'iconOn', 'iconOff', 'accentColor', 'color', 'readOnly', 'driverLabel', 'gridW', 'gridH']
+            const allowedProps = ['label', 'name', 'iconOn', 'iconOff', 'accentColor', 'color', 'readOnly', 'confirmOff', 'driverLabel', 'gridW', 'gridH']
             
             for (const prop of allowedProps) {
                 if (msg[prop] !== undefined) {
@@ -66,6 +68,10 @@ module.exports = function (RED) {
                 const on = typeof msg.payload === 'boolean' ? msg.payload : !!msg.payload
                 server.broadcastState(node.id, { on })
                 node.status({ fill: on ? 'green' : 'grey', shape: 'dot', text: on ? 'on' : 'off' })
+            }
+            done()
+            } catch (err) {
+                done(err)
             }
         })
 

@@ -29,17 +29,23 @@
         "build": "vite build",
         "build:dev": "NODE_ENV=development vite build",
         "dev": "NODE_ENV=development vite build --watch",
+        "icons": "pwa-asset-generator ui/public/pap-logo.svg ui/public/icons --background \"#1a1a1e\" --icon-only --favicon",
         "prepublishOnly": "npm run build"
     },
     "dependencies": {
+        "@ngrok/ngrok": "^1.4.0",
+        "bcryptjs": "^2.4.3",
         "express": "^4.18.0",
+        "express-session": "^1.18.0",
         "socket.io": "^4.7.0"
     },
     "devDependencies": {
         "@vitejs/plugin-vue": "^5.0.0",
         "pinia": "^2.1.0",
+        "pwa-asset-generator": "^6.3.1",
         "socket.io-client": "^4.7.0",
         "vite": "^5.0.13",
+        "vite-plugin-pwa": "^0.20.0",
         "vue": "^3.4.0",
         "vue-router": "^4.3.0"
     },
@@ -56,7 +62,17 @@
             "ui-pap-subgroup": "nodes/ui-pap-subgroup/ui-pap-subgroup.js",
             "ui-pap-switch": "nodes/widgets/ui-pap-switch/ui-pap-switch.js",
             "ui-pap-sensor": "nodes/widgets/ui-pap-sensor/ui-pap-sensor.js",
-            "ui-pap-gauge": "nodes/widgets/ui-pap-gauge/ui-pap-gauge.js"
+            "ui-pap-gauge": "nodes/widgets/ui-pap-gauge/ui-pap-gauge.js",
+            "ui-pap-button": "nodes/widgets/ui-pap-button/ui-pap-button.js",
+            "ui-pap-slider": "nodes/widgets/ui-pap-slider/ui-pap-slider.js",
+            "ui-pap-light": "nodes/widgets/ui-pap-light/ui-pap-light.js",
+            "ui-pap-thermostat": "nodes/widgets/ui-pap-thermostat/ui-pap-thermostat.js",
+            "ui-pap-scene": "nodes/widgets/ui-pap-scene/ui-pap-scene.js",
+            "ui-pap-chart": "nodes/widgets/ui-pap-chart/ui-pap-chart.js",
+            "ui-pap-clock": "nodes/widgets/ui-pap-clock/ui-pap-clock.js",
+            "ui-pap-log": "nodes/widgets/ui-pap-log/ui-pap-log.js",
+            "ui-pap-auth": "nodes/ui-pap-auth/ui-pap-auth.js",
+            "ui-pap-tunnel": "nodes/ui-pap-tunnel/ui-pap-tunnel.js"
         }
     }
 }

@@ -1,0 +1,98 @@
+<script type="text/javascript">
+    RED.nodes.registerType('ui-pap-auth', {
+        category: 'config',
+        color: '#2b2b30',
+        defaults: {
+            name:      { value: 'PAP Auth' },
+            usernames: { value: [] }
+        },
+        credentials: {
+            password0: { type: 'password' }, password1: { type: 'password' },
+            password2: { type: 'password' }, password3: { type: 'password' },
+            password4: { type: 'password' }, password5: { type: 'password' },
+            password6: { type: 'password' }, password7: { type: 'password' },
+            password8: { type: 'password' }, password9: { type: 'password' }
+        },
+        label: function () {
+            return this.name || 'PAP Auth'
+        },
+        icon: 'font-awesome/fa-lock',
+        oneditprepare: function () {
+            const MAX_USERS = 10
+            const $rows = $('#pap-auth-rows')
+
+            function addRow (username) {
+                if ($rows.children().length >= MAX_USERS) {
+                    RED.notify('PAP Auth: maximum ' + MAX_USERS + ' users', 'warning')
+                    return
+                }
+                const $row = $('<div class="pap-auth-row" style="display:flex;gap:6px;margin-bottom:6px;align-items:center;"></div>')
+                const $user = $('<input type="text" placeholder="Username" style="flex:1;">').val(username || '')
+                const $pass = $('<input type="password" placeholder="Password" style="flex:1;">')
+                const $del  = $('<button type="button" class="red-ui-button"><i class="fa fa-trash"></i></button>')
+                    .on('click', function () { $row.remove() })
+                $row.append($user).append($pass).append($del)
+                $rows.append($row)
+            }
+
+            const usernames = this.usernames || []
+            if (usernames.length) usernames.forEach(u => addRow(u))
+            else addRow()
+
+            $('#pap-auth-add').on('click', function () { addRow() })
+        },
+        oneditsave: function () {
+            const MAX_USERS = 10
+            const entries = []
+            $('#pap-auth-rows .pap-auth-row').each(function () {
+                const $inputs = $(this).find('input')
+                const username = $($inputs[0]).val().trim()
+                const password = $($inputs[1]).val()
+                if (username && password) entries.push({ username, password })
+            })
+            for (let i = 0; i < MAX_USERS; i++) {
+                let $hidden = $('#node-config-input-password' + i)
+                if ($hidden.length === 0) {
+                    $hidden = $('<input type="hidden" id="node-config-input-password' + i + '">').appendTo(document.body)
+                }
+                $hidden.val(i < entries.length ? entries[i].password : '')
+            }
+            this.usernames = entries.map(e => e.username)
+        }
+    })
+</script>
+
+<script type="text/html" data-template-name="ui-pap-auth">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="PAP Auth">
+    </div>
+    <div class="form-row">
+        <label style="width:100%;"><i class="fa fa-users"></i> Users (max 10)</label>
+        <div id="pap-auth-rows" style="margin-top:6px;"></div>
+        <button type="button" id="pap-auth-add" class="red-ui-button">
+            <i class="fa fa-plus"></i> Add user
+        </button>
+    </div>
+    <div class="form-row">
+        <small style="color:#a0a0a5;">
+            Every password must be re-entered each time you edit and save this node —
+            passwords are never sent back to the editor for display.
+        </small>
+    </div>
+</script>
+
+<script type="text/html" data-help-name="ui-pap-auth">
+    <p>Stores up to 10 username/password pairs (bcrypt-hashed at runtime) used to protect a
+    <strong>ui-pap-server</strong> dashboard.</p>
+    <h3>Usage</h3>
+    <ol>
+        <li>Add usernames and passwords below (at least one row).</li>
+        <li>Open the <strong>ui-pap-server</strong> node and set its <em>Auth</em> field to this node.</li>
+        <li>Deploy — the dashboard now requires a login before use.</li>
+    </ol>
+    <h3>Important</h3>
+    <p>Node-RED never sends stored passwords back to the editor, so every time you reopen and save
+    this node you must re-type <strong>all</strong> currently-listed users' passwords. Leaving a
+    row's password empty removes that user when you save.</p>
+</script>

@@ -1,27 +1,18 @@
 # PAP UI — Backlog
 
-> Aggiornato: 2026-03-20
+> Aggiornato: 2026-10-17
 
 ---
 
 ## 🔴 Critici (bloccanti per l'usabilità)
 
-### Nodi Node-RED
-- [ ] **`ui-pap-page` — campo `area` mancante in `.js`**
-  Il campo `area` (TypedInput → config node) è nel `.html` ma va verificato che venga effettivamente passato a `registerPage()` come `pageNode.config.area`.
-
-- [ ] **Nessuna persistenza dello stato widget**
-  Quando l'utente fa un'azione (toggle switch/light), il messaggio viene inviato via socket ma nessun nodo Node-RED lo propaga all'output per aggiornare il device reale. Serve un output sul nodo widget (o un nodo `ui-pap-action` separato) che emetta il payload verso il device.
-
-- [ ] **Socket `pap:action` non gestito lato server**
-  `devicesStore.sendAction()` emette `pap:action` ma il server node non ha un handler `socket.on('pap:action', ...)` che trasformi l'evento in un messaggio Node-RED in uscita.
-
-### Frontend
-- [ ] **`LightControl.vue` — callback `close` non verificato**
-  Il popup chiama `@close` ma va verificato che `LightControl` emetta effettivamente `close` in tutti i percorsi (pulsante X, fuori click, ecc.).
-
-- [ ] **Stato iniziale widget assente**
-  Al caricamento della pagina, `devicesStore.states` è vuoto finché non arriva un messaggio da Node-RED. Le tile mostrano `—` anche se il device ha uno stato. Serve un meccanismo di snapshot iniziale (`pap:state` emesso dal server al connect).
+Nessun critico noto. Trovato e corretto durante questo giro un bug reale: le route REST
+`/api/layout`, `/api/state`, `/api/scenes` erano registrate **dopo** il catch-all SPA
+(`basePath + '/*'`), quindi Express le intercettava sempre con `index.html` invece del JSON. Il
+dashboard funzionava comunque perché si appoggia al socket per il layout iniziale, ma qualunque
+consumer REST (incluso `scenes.js` → `saveScene`/`deleteScene`) era di fatto rotto. Ordine corretto
+in [ui-pap-server.js](nodes/ui-pap-server/ui-pap-server.js): route `/api/*` prima, catch-all SPA
+dopo. Verificato con smoke test (`node-red` headless + `curl`).
 
 ---
 
@@ -31,20 +22,12 @@
 - [ ] **`ui-pap-area` non appare in `buildLayoutPayload`**
   `registerArea()` salva l'area ma `buildLayoutPayload` include solo `areas` come array — verificare che `areaId` sulle pagine corrisponda agli `id` restituiti.
 
-- [ ] **Nodo `ui-pap-scene` / `ui-pap-script`**
-  Lo store `scenes.js` esiste ma nessun nodo lato Node-RED registra scene. La funzionalità è completamente vuota.
-
-- [ ] **`ui-pap-group` — campo `order` mancante nel `.html`**
-  Verificare che tutti i config node (group, subgroup) abbiano il campo `order` configurabile dall'editor.
-
 ### Frontend — componenti mancanti
-- [ ] **Indicatore di connessione** (`connection.js` store esiste ma non è visualizzato da nessuna parte)
-
 - [ ] **Tile thermostat — mini sparkline nella tile**
-  La tile 2×2 del termostato potrebbe mostrare un grafico ridotto della storia (ultimi N valori) direttamente nella card, senza aprire il popup.
+  La tile del termostato potrebbe mostrare un grafico ridotto della storia (ultimi N valori) direttamente nella card.
 
 - [ ] **Tile light — preview colore**
-  Se la luce ha `hasColor` e uno stato colore, mostrare un cerchietto colorato nella tile.
+  Se la luce ha `hasColor` e uno stato colore, mostrare un cerchietto colorato nella tile (oggi il campo `color` è solo pass-through nel payload, nessuna UI).
 
 - [ ] **`PageView.vue` — loading skeleton**
   Se il layout non è ancora caricato (prima fetch), mostrare placeholder animati invece di "Pagina non trovata".
@@ -52,14 +35,11 @@
 - [ ] **`PrimaryNav` — stato di caricamento**
   Se `layoutStore.loading === true`, mostrare un indicatore nella sidebar.
 
-- [ ] **`PrimaryNav` — icone pagina**
-  Il campo `page.icon` è inviato nel payload ma PrimaryNav usa `fa fa-{icon}`. Verificare che le icone Font Awesome siano disponibili in Node-RED (lo sono, ma serve prefix corretto).
-
-- [ ] **Popup — animazione apertura/chiusura**
-  Il `WidgetPopup` appare/scompare senza transizione. Aggiungere `<Transition>` Vue.
-
 - [ ] **`SecondaryNav` — nascondere sottogruppi se il gruppo non è selezionato**
   Attualmente i sottogruppi con >1 item sono sempre visibili. Potrebbe essere più pulito mostrarli solo quando il gruppo padre è selezionato (espansione accordion).
+
+### Scene — UI di gestione
+- [ ] **Editor scene nel frontend** — `ui-pap-scene` ora esiste come tile-trigger verso un flow, e la REST API di save/delete scene funziona (bug fix sopra), ma non c'è ancora una UI per creare/modificare scene salvate dal dashboard stesso.
 
 ---
 
@@ -68,27 +48,35 @@
 ### UX
 - [ ] **Dark/light theme toggle** — CSS vars già predisposte, basta aggiungere la classe al body e il toggle nella navbar
 
-- [ ] **Responsive / mobile** — layout attuale è fisso. Su schermi stretti le sidebar collassano. Aggiungere breakpoint: sotto 768px → sidebar hamburger menu, body full-width.
-
-- [ ] **`gridAutoRows` configurabile per pagina** — attualmente fisso a 130px. Potrebbe essere un campo `cellHeight` sul nodo `ui-pap-page`.
+- [ ] **`gridAutoRows` configurabile per pagina** — attualmente fisso. Potrebbe essere un campo `cellHeight` sul nodo `ui-pap-page`.
 
 - [ ] **Drag & reorder widget** — non previsto ma sarebbe il passo naturale successivo alla grid.
 
 - [ ] **Tooltip al hover sulla tile** — mostrare info estese (es. ultimo aggiornamento).
 
+- [ ] **Color wheel per `ui-pap-light`** — oggi `hasColor` passa solo un campo `color` testuale nel payload, nessun picker visivo.
+
 ### Node-RED editor
 - [ ] **Preview live nell'editor Node-RED** — una piccola anteprima del layout nella sidebar del nodo server (opzionale, complessità alta).
 
-- [ ] **Validazione `schedules` JSON nel nodo thermostat** — attualmente è un campo testo libero, errori silenti.
-
-- [ ] **Help `.html` da completare** — i file `data-help-name` di tutti i nodi sono sommari. Documentare i formati di payload attesi.
+- [ ] **Help `.html` da completare per i nodi storici** — `ui-pap-switch`/`sensor`/`gauge` hanno help sommari; i nuovi nodi (button/slider/light/thermostat/scene) hanno già help estesi.
 
 ### Build & distribuzione
 - [ ] **`package.json` — keywords, description, repository** da completare prima di pubblicare su npm.
 
-- [ ] **Test di integrazione** — nessun test automatico. Almeno uno smoke test che verifichi che il server risponda a `GET /pap/api/layout`.
+- [ ] **Test di integrazione automatico** — oggi lo smoke test (`node-red` headless + `curl` su `/api/layout`) è manuale; andrebbe scriptato in CI.
 
 - [ ] **CI/CD** — nessuna pipeline GitHub Actions per build + npm publish.
+
+- [ ] **`ui-pap-chart`** — time-series line/bar chart, non ancora iniziato.
+
+- [ ] **Icone PWA generate con placeholder** — `pap-logo.svg` è un logo segnaposto (mosaico di
+  quadrati colorati). Da sostituire con un logo definitivo prima della pubblicazione (poi
+  rilanciare `npm run icons`).
+
+- [ ] **ngrok non testato end-to-end** — `ui-pap-tunnel` non è stato verificato con un account
+  ngrok reale in questo ambiente di sviluppo (richiede authtoken). Verificare manualmente prima
+  del rilascio.
 
 ---
 
@@ -104,6 +92,19 @@
 - [x] Filtro per gruppo e sottogruppo nella SecondaryNav
 - [x] Home redirect automatico al mount
 - [x] Reset filtri al cambio pagina (watch su `route.params.id`)
-- [x] Popup espandibile per thermostat e light (con color/dimming)
 - [x] `WidgetTile` con icone tipo-widget, stato ON/OFF, effetto glow
 - [x] `buildLayoutPayload` con struttura annidata completa
+- [x] Indicatore di connessione in `PrimaryNav` (dot verde/arancio/rosso legato a `connection.js`)
+- [x] Fix ordine route: `/api/*` prima del catch-all SPA (bug critico, vedi sopra)
+- [x] Persistenza stato widget + scene via Node-RED context (`node.context()`), sopravvive al restart se `contextStorage` è file-backed in `settings.js`
+- [x] `ui-pap-button` — tile momentanea, output `true` al click
+- [x] `ui-pap-slider` — range slider scrivibile (drag → `{ value }`)
+- [x] `ui-pap-light` — on/off + slider brightness inline (`hasColor` pass-through, nessun color wheel)
+- [x] `ui-pap-thermostat` — temperatura corrente + stepper setpoint + pill modalità ciclabile
+- [x] `ui-pap-scene` — tile trigger scena, output `{ payload:true, topic:<nome scena> }`
+- [x] Mobile bottom navigation (`MobileNav.vue`, visibile sotto 768px)
+- [x] Smoke test manuale: `node-red` headless + flow con tutti i tipi di widget + verifica `/api/layout`, `/api/state`, `/api/scenes`
+- [x] PWA installabile: manifest + service worker (`vite-plugin-pwa`), icone generate da `ui/public/pap-logo.svg`, file servite da `ui-pap-server.js` via `express.static(distPath)` prima del catch-all SPA
+- [x] `ui-pap-auth` — nodo di config multi-utente (max 10, bcrypt), referenziabile da `ui-pap-server.auth`
+- [x] Sessione/login (`express-session`, cookie) + guardia su route `/api/*`/catch-all + Socket.IO (`io.engine.use` + `io.use`), opt-in e retrocompatibile (nessun `auth` configurato = comportamento pubblico identico a prima)
+- [x] `ui-pap-tunnel` — nodo di config per tunnel ngrok (static domain gratuito), con warning se l'editor Node-RED non è protetto da `adminAuth`

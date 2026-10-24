@@ -1,6 +1,13 @@
 <template>
     <nav class="primary-nav">
-        <div class="primary-nav__brand">{{ appTitle }}</div>
+        <div class="primary-nav__brand">
+            {{ appTitle }}
+            <span
+                class="primary-nav__status"
+                :class="'is-' + connectionStore.status"
+                :title="connectionStatusLabel"
+            />
+        </div>
 
         <div v-if="layoutStore.areas.length > 0">
             <div v-for="area in sortedAreas" :key="area.id" class="primary-nav__area">
@@ -49,15 +56,23 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useLayoutStore } from '../../stores/layout.js'
-import { useUiStore }     from '../../stores/ui.js'
+import { useLayoutStore }     from '../../stores/layout.js'
+import { useUiStore }         from '../../stores/ui.js'
+import { useConnectionStore } from '../../stores/connection.js'
 
-const route       = useRoute()
-const router      = useRouter()
-const layoutStore = useLayoutStore()
-const uiStore     = useUiStore()
+const route           = useRoute()
+const router          = useRouter()
+const layoutStore     = useLayoutStore()
+const uiStore         = useUiStore()
+const connectionStore = useConnectionStore()
 
 const appTitle = window.__PAP__?.title || 'PAP UI'
+
+const connectionStatusLabel = computed(() => ({
+    connected:    'Connesso',
+    connecting:   'Connessione in corso…',
+    disconnected: 'Disconnesso'
+}[connectionStore.status] || connectionStore.status))
 
 const sortedPages = computed(() =>
     [...layoutStore.pages].sort((a, b) => (a.order || 0) - (b.order || 0))
@@ -124,11 +139,35 @@ function navigate (page) {
 }
 
 .primary-nav__brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     font-size: 1.1rem;
     font-weight: 700;
     color: var(--color-accent);
     padding: 0 16px 20px;
     letter-spacing: 0.05em;
+}
+
+.primary-nav__status {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: var(--color-muted);
+}
+
+.primary-nav__status.is-connected {
+    background: #3dd28d;
+    box-shadow: 0 0 6px rgba(61, 210, 141, 0.8);
+}
+
+.primary-nav__status.is-connecting {
+    background: #ff7d44;
+}
+
+.primary-nav__status.is-disconnected {
+    background: #ff3b3b;
 }
 
 .primary-nav__area {
